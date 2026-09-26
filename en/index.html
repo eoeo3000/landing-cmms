@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Norte — Programs for field work</title>
+<meta name="description" content="Norte builds software from real field problems: maintenance, logistics and operations where the signal doesn't always reach.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0F1A; --panel:#111A29; --panel-2:#0D1420; --line:#212E44; --line-lit:#33456A;
+    --ink:#F3F6FB; --muted:#8A96AC; --muted-d:#5C6982;
+    --amber:#FF9F1C; --amber-d:#CC7A0E; --teal:#2FD9C4; --coral:#FF5A5F; --off:#3A465C;
+    --white:#FFFFFF; --radius:3px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Source Sans 3',system-ui,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Barlow Semi Condensed',sans-serif}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  a{color:inherit}
+  .wrap{max-width:980px;margin:0 auto;padding:0 28px}
+  ::selection{background:var(--amber);color:var(--bg)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+
+  /* ---------- Nav ---------- */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(10,15,26,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:21px;letter-spacing:.01em}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal)}
+  .lang{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:6px 10px;border-radius:var(--radius)}
+  .lang:hover{border-color:var(--line-lit);color:var(--ink)}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:80px 0 56px}
+  .kicker{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .kicker .rule{width:30px;height:2px;background:var(--amber)}
+  .kicker span{font-size:14px;font-weight:600;color:var(--muted)}
+  .hero h1{font-size:clamp(36px,5vw,54px);font-weight:800;line-height:1.06;letter-spacing:-.01em;max-width:16ch}
+  .hero h1 .hl{color:var(--amber)}
+  .hero p{margin-top:20px;font-size:19px;color:var(--muted);max-width:52ch}
+
+  /* ---------- Panel legend ---------- */
+  .legend{display:flex;gap:22px;flex-wrap:wrap;margin:34px 0 8px;padding:16px 20px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius)}
+  .legend .item{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted)}
+  .led{width:9px;height:9px;border-radius:50%;flex:none}
+  .led.live{background:var(--teal);box-shadow:0 0 8px var(--teal);animation:pulse 2.2s ease-in-out infinite}
+  .led.pilot{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  .led.off{background:var(--off)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+
+  /* ---------- Program channels ---------- */
+  .channels{padding:36px 0 90px}
+  .channel{
+    display:grid;grid-template-columns:70px 1fr auto;gap:22px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px;margin-bottom:14px;transition:border-color .15s ease;
+  }
+  .channel:hover{border-color:var(--line-lit)}
+  .channel.disabled{opacity:.72}
+  @media(max-width:680px){.channel{grid-template-columns:1fr;gap:14px}}
+  .ch-code{display:flex;flex-direction:column;align-items:center;gap:8px}
+  @media(max-width:680px){.ch-code{flex-direction:row;justify-content:flex-start}}
+  .ch-code .num{font-size:13px;color:var(--muted-d);font-weight:600}
+  .ch-body h2{font-size:23px;font-weight:700}
+  .ch-tag{display:inline-block;margin-left:10px;font-size:11.5px;font-weight:700;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:20px;vertical-align:middle}
+  .ch-body p{margin-top:7px;font-size:15px;color:var(--muted);max-width:52ch}
+  .ch-audience{margin-top:9px;font-size:13px;color:var(--muted-d)}
+  .ch-audience b{color:var(--muted)}
+  .ch-cta{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  @media(max-width:680px){.ch-cta{align-items:flex-start}}
+  .status{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .status.live{color:var(--teal)}
+  .status.pilot{color:var(--amber)}
+  .status.off{color:var(--muted-d)}
+  .btn{display:inline-block;padding:11px 20px;border-radius:var(--radius);font-weight:700;font-size:14.5px;text-decoration:none;white-space:nowrap}
+  .btn-amber{background:var(--amber);color:var(--bg)}
+  .btn-amber:hover{background:#FFB74D}
+  .btn-ghost{border:1px solid var(--line-lit);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--muted);color:var(--ink)}
+
+  /* ---------- Method ---------- */
+  .method{background:var(--panel-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .method-inner{padding:64px 0}
+  .method h2{font-size:clamp(26px,3vw,34px);font-weight:800;max-width:26ch}
+  .method > .wrap > p{margin-top:12px;color:var(--muted);max-width:50ch;font-size:16px}
+  .m-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+  @media(max-width:780px){.m-grid{grid-template-columns:1fr}}
+  .m-card .n{font-family:'IBM Plex Mono';font-size:13px;color:var(--amber)}
+  .m-card h3{margin-top:10px;font-size:19px;font-weight:700}
+  .m-card p{margin-top:8px;font-size:14.5px;color:var(--muted)}
+  .m-card{border-left:2px solid var(--line-lit);padding-left:18px}
+
+  /* ---------- Notify ---------- */
+  .notify{padding:70px 0}
+  .notify-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:34px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  .notify-box h2{font-size:23px;font-weight:800;max-width:26ch}
+  .notify-box p{margin-top:6px;color:var(--muted);font-size:15px}
+  .notify-form{display:flex;gap:10px;flex-wrap:wrap}
+  .notify-form input{border:1px solid var(--line-lit);background:var(--panel-2);color:var(--ink);border-radius:var(--radius);padding:11px 14px;font:inherit;font-size:15px;min-width:220px}
+  .notify-form input:focus{outline:2px solid var(--amber);outline-offset:1px}
+  #nMsg{width:100%;margin-top:10px;font-size:14px;font-weight:600;display:none;color:var(--teal)}
+
+  footer{padding:40px 0;border-top:1px solid var(--line)}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center}
+  footer .fine{font-size:13px;color:var(--muted-d)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>Norte</div>
+    <a class="lang" href="/">ES</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker"><span class="rule"></span><span>Norte programs</span></div>
+    <h1>Software for field work, <span class="hl">where the signal doesn't reach.</span></h1>
+    <p>Every program follows the same method: we find a real problem that keeps showing up in reviews and forums, measure how much it hurts and whether people would pay to fix it, then test it in the field before building the whole thing.</p>
+
+    <div class="legend">
+      <div class="item"><span class="led live"></span>Live now</div>
+      <div class="item"><span class="led pilot"></span>In pilot with real customers</div>
+      <div class="item"><span class="led off"></span>Next, still being defined</div>
+    </div>
+  </div>
+</header>
+
+<section class="channels">
+  <div class="wrap">
+
+    <div class="channel">
+      <div class="ch-code">
+        <span class="led pilot" style="width:12px;height:12px;box-shadow:0 0 10px var(--amber)"></span>
+        <span class="num mono">CH-01</span>
+      </div>
+      <div class="ch-body">
+        <h2>Turno<span class="ch-tag">Maintenance</span></h2>
+        <p>The maintenance system that keeps working with no signal on site, live in days, flat price per shop.</p>
+        <div class="ch-audience"><b>For:</b> maintenance shops and remote-site contractors, 5 to 50 technicians</div>
+      </div>
+      <div class="ch-cta">
+        <span class="status pilot">In pilot</span>
+        <a href="/mantenimiento/en/" class="btn btn-amber">See the program</a>
+      </div>
+    </div>
+
+    <div class="channel disabled">
+      <div class="ch-code">
+        <span class="led off" style="width:12px;height:12px"></span>
+        <span class="num mono">CH-02</span>
+      </div>
+      <div class="ch-body">
+        <h2>Next program<span class="ch-tag">In definition</span></h2>
+        <p>We're collecting and measuring real complaints from a new industry. Once the problem is validated, this channel goes live.</p>
+        <div class="ch-audience"><b>Status:</b> exploring industries and measuring evidence</div>
+      </div>
+      <div class="ch-cta">
+        <span class="status off">Coming soon</span>
+        <a href="#notify" class="btn btn-ghost">Notify me</a>
+      </div>
+    </div>
+
+    <div class="channel disabled">
+      <div class="ch-code">
+        <span class="led off" style="width:12px;height:12px"></span>
+        <span class="num mono">CH-03</span>
+      </div>
+      <div class="ch-body">
+        <h2>Reserved channel<span class="ch-tag">In definition</span></h2>
+        <p>This spot is reserved for the next industry that passes validation: enough real complaints, with confirmed pain and willingness to pay.</p>
+        <div class="ch-audience"><b>Status:</b> no candidate yet</div>
+      </div>
+      <div class="ch-cta">
+        <span class="status off">Coming soon</span>
+        <a href="#notify" class="btn btn-ghost">Notify me</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="method">
+  <div class="method-inner wrap">
+    <h2>How we decide what to build</h2>
+    <p>No program starts from a hunch. Before a single line of code, it goes through the same filter.</p>
+    <div class="m-grid">
+      <div class="m-card">
+        <div class="n mono">01</div>
+        <h3>We find the complaint</h3>
+        <p>2 and 3-star reviews, Reddit threads, industry forums. The real problem, not the one that sounds good in a meeting.</p>
+      </div>
+      <div class="m-card">
+        <div class="n mono">02</div>
+        <h3>We measure pain and willingness to pay</h3>
+        <p>How much the problem costs the person who has it, and whether there are real signs they'd pay to fix it.</p>
+      </div>
+      <div class="m-card">
+        <div class="n mono">03</div>
+        <h3>We test before we build</h3>
+        <p>A pilot with real customers, at a real price, before building the full product.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="notify" id="notify">
+  <div class="wrap">
+    <div class="notify-box">
+      <div>
+        <h2>Notify me when a new channel goes live</h2>
+        <p>One email when we validate the next problem, nothing more.</p>
+      </div>
+      <form class="notify-form" id="notifyForm">
+        <input type="email" name="correo" placeholder="tu@correo.com" required>
+        <button type="submit" class="btn btn-amber">Notify me</button>
+        <p id="nMsg"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand" style="font-size:16px"><span class="dot" style="width:7px;height:7px"></span>Norte</div>
+    <div class="fine">Software for teams that work where the signal doesn't reach.</div>
+  </div>
+</footer>
+
+<script>
+  // Reemplaza este manejador por tu propio endpoint (Formspree, Getform, tu backend, etc.)
+  document.getElementById('notifyForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const msg = document.getElementById('nMsg');
+    msg.textContent = 'Sample form: connect a real endpoint before publishing.';
+    msg.style.display = 'block';
+    this.reset();
+  });
+</script>
+</body>
+</html>
